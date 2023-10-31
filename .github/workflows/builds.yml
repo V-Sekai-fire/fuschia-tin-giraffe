@@ -3,6 +3,7 @@ name: Builds
 on:
   push:
     branches:
+      - main
       - tarballs
   pull_request:
 
