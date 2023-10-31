@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - tarballs
   pull_request:
 
 env:
@@ -27,32 +26,18 @@ jobs:
           ./build.sh
         shell: bash
 
+      - name: Rename Files
+        run: |
+          find ${{ env.TARGET_DIR }} -name "*::*" -type f | while read -r file; do mv "$file" "${file//:/_}"; done
+        shell: bash
+
+      - name: Compress Directory
+        run: |
+          zip -r osxcross_target.zip ${{ env.TARGET_DIR }}
+        shell: bash
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: osxcross_target
-          path: /tmp/osxcross_target/
-
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/')
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.create_tag.outputs.new_tag }}
-          release_name: Release ${{ steps.create_tag.outputs.new_tag }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        if: startsWith(github.ref, 'refs/tags/')
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./osxcross_target.zip
-          asset_name: osxcross_target.zip
-          asset_content_type: application/zip
+          path: ./osxcross_target.zip
