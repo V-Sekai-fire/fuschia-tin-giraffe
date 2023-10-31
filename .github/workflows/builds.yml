@@ -25,7 +25,13 @@ jobs:
       - name: Run a script
         run: |
           ./build.sh
-          
+        shell: bash
+
+      - name: Archive directory
+        run: |
+          zip -r osxcross_target.zip /tmp/osxcross_target/
+        shell: bash
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -37,37 +43,13 @@ jobs:
           draft: false
           prerelease: false
 
-      # - name: Upload Release Assets
-      #   uses: actions/github-script@v6
-      #   with:
-      #     github-token: ${{secrets.GITHUB_TOKEN}}
-      #     script: |
-      #       const fs = require('fs');
-      #       const path = require('path');
-      #       const artifacts = [
-      #         'vsekai_game_windows_x86_64.zip', 
-      #         'vsekai_game_linux_x86_64.zip',
-      #         'vsekai_game_mac_x86_64.zip',
-      #         'vsekai_editor_windows_x86_64.zip',
-      #         'vsekai_editor_linux_x86_64.zip',
-      #         'vsekai_editor_mac_x86_64.zip',
-      #         './bin/godot.windows.editor.x86_64.llvm.exe',
-      #         './bin/godot.linuxbsd.editor.x86_64.llvm',
-      #         './bin/godot.osx.editor.x86_64'
-      #       ];
-      #       for (const artifact of artifacts) {
-      #         const filePath = path.join(process.env.GITHUB_WORKSPACE, artifact);
-      #         if (fs.existsSync(filePath)) {
-      #           await github.repos.uploadReleaseAsset({
-      #             owner: context.repo.owner,
-      #             repo: context.repo.repo,
-      #             release_id: context.payload.release.id,
-      #             name: path.basename(artifact),
-      #             data: fs.readFileSync(filePath),
-      #             headers: {
-      #               'content-length': fs.statSync(filePath).size,
-      #               'content-type': 'application/zip',
-      #             },
-      #           });
-      #         }
-      #       }
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./osxcross_target.zip
+          asset_name: osxcross_target.zip
+          asset_content_type: application/zip
