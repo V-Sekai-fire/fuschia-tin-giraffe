@@ -9,7 +9,7 @@ on:
 
 env:
   UNATTENDED: 1
-  SDK_VERSION: 11.0
+  SDK_VERSION: 14.0
   TARGET_DIR: /tmp/osxcross_target
 
 concurrency:
