@@ -6,8 +6,6 @@ on:
       - main
       - tarballs
   pull_request:
-  tags:        
-      - v*
 
 env:
   UNATTENDED: 1
