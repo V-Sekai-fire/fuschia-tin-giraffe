@@ -22,6 +22,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Bump version and push tag
+        id: create_tag
+        uses: anothrNick/github-tag-action@1.34.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: minor
+          INITIAL_VERSION: 0.1.0
+          PRERELEASE: true
+
       - name: Run a script
         run: |
           ./build.sh
@@ -31,6 +41,12 @@ jobs:
         run: |
           zip -r osxcross_target.zip /tmp/osxcross_target/
         shell: bash
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: osxcross_target
+          path: ./osxcross_target.zip
 
       - name: Create Release
         id: create_release
