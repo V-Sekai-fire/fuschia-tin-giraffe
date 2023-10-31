@@ -27,16 +27,11 @@ jobs:
           ./build.sh
         shell: bash
 
-      - name: Archive directory
-        run: |
-          zip -r osxcross_target.zip /tmp/osxcross_target/
-        shell: bash
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: osxcross_target
-          path: ./osxcross_target.zip
+          path: /tmp/osxcross_target/
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
